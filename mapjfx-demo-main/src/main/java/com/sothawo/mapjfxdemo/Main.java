@@ -15,8 +15,9 @@
 */
 package com.sothawo.mapjfxdemo;
 
-public class DemoAppLauncher {
+public class Main {
     public static void main(String[] args) {
-        DemoApp.main(args);
+//        RouteSeeker.main(args);
+        CycleFinder.main(args);
     }
 }

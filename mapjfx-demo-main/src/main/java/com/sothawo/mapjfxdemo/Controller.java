@@ -35,8 +35,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,6 +54,7 @@ public class Controller {
     final List<CoordinateLine> pathList = new ArrayList<>();
     final List<Coordinate> predefinedPointsList = new ArrayList<>();
     final List<MapCircle> predefinedMapCircleList = new ArrayList<>();
+
     private static final Coordinate coordPalat = new Coordinate(47.157925, 27.586588);
     private static final Coordinate coordExpo = new Coordinate(47.186680, 27.561047);
     private static final Coordinate coordRondDacia = new Coordinate(47.166728, 27.557283);
@@ -66,16 +65,27 @@ public class Controller {
     private static final Coordinate coordEstIasi = new Coordinate(47.168813, 27.670672);
     private static final Extent extindereIasi = Extent.forCoordinates(coordNordIasi, coordSudIasi, coordVestIasi, coordEstIasi);
 
-    private CoordinateLine coordinateLine;
     private static final int ZOOM_DEFAULT = 14;
 
-    private final Marker markerKaHarbour;
+    private Marker markerExpo;
 
-    private final Marker markerKaCastle;
+    private Marker markerPalat;
 
-    private final Marker markerKaStation;
+    private Marker markerRondDacia;
 
-    private final Marker markerClick;
+    private Marker markerClick;
+
+    @FXML
+    private CheckBox checkExpoMarker;
+
+    @FXML
+    private CheckBox checkRondDaciaMarker;
+
+    @FXML
+    private Button buttonExpo;
+
+    @FXML
+    private Button buttonRondDacia;
 
     @FXML
     private Button buttonZoom;
@@ -96,14 +106,7 @@ public class Controller {
     private TitledPane optionsLocations;
 
     @FXML
-    private Button buttonKaHarbour;
-
-    @FXML
-    private Button buttonKaStation;
-
-    @FXML
     private Button buttonAllLocations;
-
 
     @FXML
     private Label labelCenter;
@@ -118,15 +121,10 @@ public class Controller {
     private Label labelEvent;
 
     @FXML
-    private CheckBox checkKaHarbourMarker;
-
-    @FXML
-    private CheckBox checkKaStationMarker;
-
-    @FXML
     private CheckBox checkClickMarker;
 
     private CoordinateLine polygonLine;
+
     @FXML
     private CheckBox checkDrawPolygon;
 
@@ -134,6 +132,12 @@ public class Controller {
     private CheckBox checkConstrainIasi;
 
     public Controller() {
+        addAllPointsList();
+        addMarkersAndLabels();
+        addMapCircles();
+    }
+
+    private void addAllPointsList(){
         this.predefinedPointsList.add(new Coordinate(47.187850452530654, 27.561212734746057));
         this.predefinedPointsList.add(new Coordinate(47.18831377613423, 27.562583222220642));
         this.predefinedPointsList.add(new Coordinate(47.18846033684029, 27.56496940092005));
@@ -150,29 +154,32 @@ public class Controller {
         this.predefinedPointsList.add(new Coordinate(47.18154317585598, 27.566534678698208));
         this.predefinedPointsList.add(new Coordinate(47.182465200833214, 27.568336487103878));
         this.predefinedPointsList.add(new Coordinate(47.18335411233271, 27.569908721517002));
+    }
 
-        markerKaHarbour = Marker.createProvided(Marker.Provided.BLUE).setPosition(coordExpo).setVisible(
-                false);
-        markerKaCastle = Marker.createProvided(Marker.Provided.GREEN).setPosition(coordPalat).setVisible(
-                false);
-        markerKaStation =
-                Marker.createProvided(Marker.Provided.RED).setPosition(coordRondDacia).setVisible(false);
+    private void addMarkersAndLabels(){
+        markerExpo = Marker.createProvided(Marker.Provided.BLUE).setPosition(coordExpo).setVisible(false);
+        markerPalat = Marker.createProvided(Marker.Provided.GREEN).setPosition(coordPalat).setVisible(false);
+        markerRondDacia = Marker.createProvided(Marker.Provided.RED).setPosition(coordRondDacia).setVisible(false);
         markerClick = Marker.createProvided(Marker.Provided.ORANGE).setVisible(false);
 
-        MapLabel labelKaCastle = new MapLabel("castle", 10, -10).setVisible(false).setCssClass("green-label");
-        MapLabel labelKaStation = new MapLabel("station", 10, -10).setVisible(false).setCssClass("red-label");
+        MapLabel labelExpo = new MapLabel("expo", 10, -10).setVisible(false).setCssClass("green-label");
+        MapLabel labelPalat = new MapLabel("palat", 10, -10).setVisible(false).setCssClass("green-label");
+        MapLabel labelRondDacia = new MapLabel("rond Dacia", 10, -10).setVisible(false).setCssClass("red-label");
         MapLabel labelClick = new MapLabel("click!", 10, -10).setVisible(false).setCssClass("orange-label");
 
-        markerKaCastle.attachLabel(labelKaCastle);
-        markerKaStation.attachLabel(labelKaStation);
+        markerExpo.attachLabel(labelExpo);
+        markerPalat.attachLabel(labelPalat);
+        markerRondDacia.attachLabel(labelRondDacia);
         markerClick.attachLabel(labelClick);
+    }
 
+    private void addMapCircles() {
         for (var point : predefinedPointsList)
             predefinedMapCircleList.add(new MapCircle(point, 20).setVisible(true).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE));
+
     }
 
     public void initMapAndControls(Projection projection) {
-
         // init MapView-Cache
         final OfflineCache offlineCache = mapView.getOfflineCache();
         final String cacheDir = System.getProperty("java.io.tmpdir") + "/mapjfx-cache";
@@ -193,8 +200,8 @@ public class Controller {
         setControlsDisable(true);
 
         // wire up the location buttons
-        buttonKaHarbour.setOnAction(event -> mapView.setCenter(coordExpo));
-        buttonKaStation.setOnAction(event -> mapView.setCenter(coordRondDacia));
+        buttonExpo.setOnAction(event -> mapView.setCenter(coordExpo));
+        buttonRondDacia.setOnAction(event -> mapView.setCenter(coordRondDacia));
 
         buttonAllLocations.setOnAction(event -> mapView.setExtent(extentAllLocations));
 
@@ -218,16 +225,16 @@ public class Controller {
         setupEventHandlers();
 
         // add the graphics to the checkboxes
-        checkKaHarbourMarker.setGraphic(
-                new ImageView(new Image(markerKaHarbour.getImageURL().toExternalForm(), 16.0, 16.0, true, true)));
-        checkKaStationMarker.setGraphic(
-                new ImageView(new Image(markerKaStation.getImageURL().toExternalForm(), 16.0, 16.0, true, true)));
+        checkExpoMarker.setGraphic(
+                new ImageView(new Image(markerExpo.getImageURL().toExternalForm(), 16.0, 16.0, true, true)));
+        checkRondDaciaMarker.setGraphic(
+                new ImageView(new Image(markerRondDacia.getImageURL().toExternalForm(), 16.0, 16.0, true, true)));
         checkClickMarker.setGraphic(
                 new ImageView(new Image(markerClick.getImageURL().toExternalForm(), 16.0, 16.0, true, true)));
 
         // bind the checkboxes to the markers visibility
-        checkKaHarbourMarker.selectedProperty().bindBidirectional(markerKaHarbour.visibleProperty());
-        checkKaStationMarker.selectedProperty().bindBidirectional(markerKaStation.visibleProperty());
+        checkExpoMarker.selectedProperty().bindBidirectional(markerExpo.visibleProperty());
+        checkRondDaciaMarker.selectedProperty().bindBidirectional(markerRondDacia.visibleProperty());
         checkClickMarker.selectedProperty().bindBidirectional(markerClick.visibleProperty());
 
         // add the polygon check handler
@@ -310,10 +317,6 @@ public class Controller {
             labelEvent.setText("Event: label right clicked: " + event.getMapLabel().getText());
         });
 
-        mapView.addEventHandler(MapViewEvent.MAP_POINTER_MOVED, event -> ceva(event));
-    }
-
-    private void ceva(MapViewEvent event) {
     }
 
     private void animateClickMarker(Coordinate oldPosition, Coordinate newPosition) {
@@ -368,45 +371,68 @@ public class Controller {
         // start at the harbour with default zoom
         mapView.setZoom(ZOOM_DEFAULT);
         mapView.setCenter(coordExpo);
+
         // add the markers to the map - they are still invisible
-        mapView.addMarker(markerKaHarbour);
-        mapView.addMarker(markerKaCastle);
-        mapView.addMarker(markerKaStation);
+        mapView.addMarker(markerExpo);
+        mapView.addMarker(markerPalat);
+        mapView.addMarker(markerRondDacia);
 
         for (var mapCircle : predefinedMapCircleList)
             mapView.addMapCircle(mapCircle);
 
         // now enable the controls
         setControlsDisable(false);
+//
+//        GraphHelper.getCycles(predefinedMapCircleList);
 
-        GraphHelper.getCycles(predefinedMapCircleList);
+//        pathList.add(new CoordinateLine(
+//                predefinedMapCircleList.get(0).getCenter(),
+//                predefinedMapCircleList.get(1).getCenter()
+//        ).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+//
+//        pathList.add(new CoordinateLine(
+//                predefinedMapCircleList.get(0).getCenter(),
+//                predefinedMapCircleList.get(3).getCenter()
+//        ).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+//
+//       for (var path : pathList)
+//           mapView.addCoordinateLine(path);
 
-        pathList.add(new CoordinateLine(
-                predefinedMapCircleList.get(0).getCenter(),
-                predefinedMapCircleList.get(1).getCenter()
-        ).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+        // function to print the cycles
+//        printCycles(edges, mark);
 
-        pathList.add(new CoordinateLine(
-                predefinedMapCircleList.get(0).getCenter(),
-                predefinedMapCircleList.get(3).getCenter()
-        ).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+        Graph graph = new Graph(predefinedMapCircleList);
+//        List<Edge> edges = graph.getEdgesList();
+        System.out.println("****************************************************");
+        System.out.println(graph.getVertexList().get(1) + " " + graph.getVertexList().get(0));
+        System.out.println("****************************************************");
 
-       for (var path : pathList)
-           mapView.addCoordinateLine(path);
+//        CycleFinder cycleFinder = new CycleFinder(graph);
+//        cycleFinder.printCycles(graph.getEdgesList().size());
+
+//        for(var edge : edges)
+//        {
+//            pathList.add(new CoordinateLine(
+//                edge.getSrc().getCenter(),
+//                edge.getDest().getCenter())
+//                    .setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+//        }
+//        for (var path : pathList)
+//           mapView.addCoordinateLine(path);
     }
 
-    private Optional<CoordinateLine> loadCoordinateLine(URL url) {
-        try (
-                Stream<String> lines = new BufferedReader(
-                        new InputStreamReader(url.openStream(), StandardCharsets.UTF_8)).lines()
-        ) {
-            return Optional.of(new CoordinateLine(
-                    lines.map(line -> line.split(";")).filter(array -> array.length == 2)
-                            .map(values -> new Coordinate(Double.valueOf(values[0]), Double.valueOf(values[1])))
-                            .collect(Collectors.toList())));
-        } catch (IOException | NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
-    }
+//    private Optional<CoordinateLine> loadCoordinateLine(URL url) {
+//        try (
+//                Stream<String> lines = new BufferedReader(
+//                        new InputStreamReader(url.openStream(), StandardCharsets.UTF_8)).lines()
+//        ) {
+//            return Optional.of(new CoordinateLine(
+//                    lines.map(line -> line.split(";")).filter(array -> array.length == 2)
+//                            .map(values -> new Coordinate(Double.valueOf(values[0]), Double.valueOf(values[1])))
+//                            .collect(Collectors.toList())));
+//        } catch (IOException | NumberFormatException e) {
+//            e.printStackTrace();
+//        }
+//        return Optional.empty();
+//    }
 }

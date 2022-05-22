@@ -58,9 +58,9 @@
                     <content>
                         <VBox spacing="10.0">
                             <children>
-                                <Button fx:id="buttonKaHarbour" text="Parcul Expozitiei" maxWidth="Infinity"/>
-                                <Button fx:id="buttonKaStation" text="Rond Dacia" maxWidth="Infinity"/>
-                                <Button fx:id="buttonAllLocations" text="Centrul hartzii" maxWidth="Infinity"/>
+                                <Button fx:id="buttonExpo" text="Parcul Expozitiei" maxWidth="Infinity"/>
+                                <Button fx:id="buttonRondDacia" text="Rond Dacia" maxWidth="Infinity"/>
+                                <Button fx:id="buttonAllLocations" text="Center of the map" maxWidth="Infinity"/>
                             </children>
                         </VBox>
                     </content>
@@ -69,9 +69,9 @@
                     <content>
                         <VBox spacing="10.0">
                             <children>
-                                <CheckBox fx:id="checkKaHarbourMarker" text="Parcul Expozitiei" maxWidth="Infinity"/>
-                                <CheckBox fx:id="checkKaStationMarker" text="Rond Dacia" maxWidth="Infinity"/>
-                                <CheckBox fx:id="checkClickMarker" text="Mil localizezi?" maxWidth="Infinity"/>
+                                <CheckBox fx:id="checkExpoMarker" text="Parcul Expozitiei" maxWidth="Infinity"/>
+                                <CheckBox fx:id="checkRondDaciaMarker" text="Rond Dacia" maxWidth="Infinity"/>
+                                <CheckBox fx:id="checkClickMarker" text="Marker" maxWidth="Infinity"/>
                             </children>
                         </VBox>
                     </content>

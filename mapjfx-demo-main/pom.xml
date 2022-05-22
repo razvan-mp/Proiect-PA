@@ -125,7 +125,7 @@
                     <programs>
                         <program>
                             <id>mapjfx-demo</id>
-                            <mainClass>com.sothawo.mapjfxdemo.DemoAppLauncher</mainClass>
+                            <mainClass>com.sothawo.mapjfxdemo.Main</mainClass>
                         </program>
                     </programs>
                 </configuration>

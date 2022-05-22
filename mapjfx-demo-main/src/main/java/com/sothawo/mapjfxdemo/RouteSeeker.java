@@ -21,15 +21,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * Demo application for the mapjfx component.
- *
- * @author P.J. Meisch (pj.meisch@sothawo.com).
- */
-public class DemoApp extends Application {
+public class RouteSeeker extends Application {
 
     /** Logger for the class */
 
