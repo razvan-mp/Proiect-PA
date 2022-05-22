@@ -24,37 +24,22 @@ import javafx.animation.Transition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.TimeUnit;
 
 public class Controller {
-    final List<CoordinateLine> pathList = new ArrayList<>();
-    final List<Coordinate> predefinedPointsList = new ArrayList<>();
-    final List<MapCircle> predefinedMapCircleList = new ArrayList<>();
-
     private static final Coordinate coordPalat = new Coordinate(47.157925, 27.586588);
     private static final Coordinate coordExpo = new Coordinate(47.186680, 27.561047);
     private static final Coordinate coordRondDacia = new Coordinate(47.166728, 27.557283);
@@ -64,9 +49,10 @@ public class Controller {
     private static final Coordinate coordVestIasi = new Coordinate(47.175779, 27.499281);
     private static final Coordinate coordEstIasi = new Coordinate(47.168813, 27.670672);
     private static final Extent extindereIasi = Extent.forCoordinates(coordNordIasi, coordSudIasi, coordVestIasi, coordEstIasi);
-
     private static final int ZOOM_DEFAULT = 14;
-
+    final List<CoordinateLine> pathList = new ArrayList<>();
+    final List<Coordinate> predefinedPointsList = new ArrayList<>();
+    final List<MapCircle> predefinedMapCircleList = new ArrayList<>();
     private Marker markerExpo;
 
     private Marker markerPalat;
@@ -137,7 +123,7 @@ public class Controller {
         addMapCircles();
     }
 
-    private void addAllPointsList(){
+    private void addAllPointsList() {
         this.predefinedPointsList.add(new Coordinate(47.187850452530654, 27.561212734746057));
         this.predefinedPointsList.add(new Coordinate(47.18831377613423, 27.562583222220642));
         this.predefinedPointsList.add(new Coordinate(47.18846033684029, 27.56496940092005));
@@ -156,7 +142,7 @@ public class Controller {
         this.predefinedPointsList.add(new Coordinate(47.18335411233271, 27.569908721517002));
     }
 
-    private void addMarkersAndLabels(){
+    private void addMarkersAndLabels() {
         markerExpo = Marker.createProvided(Marker.Provided.BLUE).setPosition(coordExpo).setVisible(false);
         markerPalat = Marker.createProvided(Marker.Provided.GREEN).setPosition(coordPalat).setVisible(false);
         markerRondDacia = Marker.createProvided(Marker.Provided.RED).setPosition(coordRondDacia).setVisible(false);
@@ -367,7 +353,7 @@ public class Controller {
         leftControls.setDisable(flag);
     }
 
-    private void afterMapIsInitialized() {
+    private void afterMapIsInitialized(){
         // start at the harbour with default zoom
         mapView.setZoom(ZOOM_DEFAULT);
         mapView.setCenter(coordExpo);
@@ -403,9 +389,35 @@ public class Controller {
 
         Graph graph = new Graph(predefinedMapCircleList);
 //        List<Edge> edges = graph.getEdgesList();
-        System.out.println("****************************************************");
-        System.out.println(graph.getVertexList().get(1) + " " + graph.getVertexList().get(0));
-        System.out.println("****************************************************");
+
+        CycleFinder cycleFinder = new CycleFinder(graph);
+        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(5);
+
+
+        List<Color> colorList = new ArrayList<>();
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+
+        for (int cycleIndex = 0; cycleIndex < graphCycles.size(); cycleIndex++) {
+            for (int vertexIndex = 0; vertexIndex < graphCycles.get(cycleIndex).size() - 1; vertexIndex++) {
+                pathList.add(new CoordinateLine(
+                        graph.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex)).getCenter(),
+                        graph.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex + 1)).getCenter()
+                ).setColor(colorList.get(cycleIndex)).setFillColor(colorList.get(cycleIndex)).setVisible(true));
+            }
+            pathList.add(new CoordinateLine(
+                    graph.getVertexList().get(graphCycles.get(cycleIndex).get(0)).getCenter(),
+                    graph.getVertexList().get(graphCycles.get(cycleIndex).get(graphCycles.get(cycleIndex).size() - 1)).getCenter()
+            ).setColor(colorList.get(cycleIndex)).setFillColor(colorList.get(cycleIndex)).setVisible(true));
+        }
+
+        for (var path : pathList) {
+            mapView.addCoordinateLine(path);
+        }
+
 
 //        CycleFinder cycleFinder = new CycleFinder(graph);
 //        cycleFinder.printCycles(graph.getEdgesList().size());
