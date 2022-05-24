@@ -15,6 +15,8 @@
 */
 package com.sothawo.mapjfxdemo;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import com.sothawo.mapjfx.*;
 import com.sothawo.mapjfx.event.MapLabelEvent;
 import com.sothawo.mapjfx.event.MapViewEvent;
@@ -31,13 +33,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class Controller {
     private static final Coordinate coordPalat = new Coordinate(47.157925, 27.586588);
@@ -124,22 +128,25 @@ public class Controller {
     }
 
     private void addAllPointsList() {
-        this.predefinedPointsList.add(new Coordinate(47.187850452530654, 27.561212734746057));
-        this.predefinedPointsList.add(new Coordinate(47.18831377613423, 27.562583222220642));
-        this.predefinedPointsList.add(new Coordinate(47.18846033684029, 27.56496940092005));
-        this.predefinedPointsList.add(new Coordinate(47.186763044515466, 27.560774457025758));
-        this.predefinedPointsList.add(new Coordinate(47.186077493230805, 27.56269453084802));
-        this.predefinedPointsList.add(new Coordinate(47.18643681776691, 27.563480648028875));
-        this.predefinedPointsList.add(new Coordinate(47.18702307889353, 27.564051104744184));
-        this.predefinedPointsList.add(new Coordinate(47.184635442636775, 27.559083957177386));
-        this.predefinedPointsList.add(new Coordinate(47.182838734635354, 27.56023878422259));
-        this.predefinedPointsList.add(new Coordinate(47.184389580898305, 27.564120672602385));
-        this.predefinedPointsList.add(new Coordinate(47.18503732949087, 27.56460764784716));
-        this.predefinedPointsList.add(new Coordinate(47.185581053969884, 27.564127629368418));
-        this.predefinedPointsList.add(new Coordinate(47.18554322983927, 27.56572769088697));
-        this.predefinedPointsList.add(new Coordinate(47.18154317585598, 27.566534678698208));
-        this.predefinedPointsList.add(new Coordinate(47.182465200833214, 27.568336487103878));
-        this.predefinedPointsList.add(new Coordinate(47.18335411233271, 27.569908721517002));
+        try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/csv/expo.csv"))){
+            String[] csvLine;
+            while((csvLine = csvReader.readNext()) != null){
+                this.predefinedPointsList.add(new Coordinate(Double.parseDouble(csvLine[0]),
+                        Double.parseDouble(csvLine[1])));
+            }
+        } catch (IOException | CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/csv/rondDacia.csv"))){
+            String[] csvLine;
+            while((csvLine = csvReader.readNext()) != null){
+                this.predefinedPointsList.add(new Coordinate(Double.parseDouble(csvLine[0]),
+                        Double.parseDouble(csvLine[1])));
+            }
+        } catch (IOException | CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void addMarkersAndLabels() {
@@ -161,7 +168,7 @@ public class Controller {
 
     private void addMapCircles() {
         for (var point : predefinedPointsList)
-            predefinedMapCircleList.add(new MapCircle(point, 20).setVisible(true).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE));
+            predefinedMapCircleList.add(new MapCircle(point, 10).setVisible(true).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE));
 
     }
 
@@ -353,7 +360,7 @@ public class Controller {
         leftControls.setDisable(flag);
     }
 
-    private void afterMapIsInitialized(){
+    private void afterMapIsInitialized() {
         // start at the harbour with default zoom
         mapView.setZoom(ZOOM_DEFAULT);
         mapView.setCenter(coordExpo);
@@ -390,11 +397,39 @@ public class Controller {
         Graph graph = new Graph(predefinedMapCircleList);
 //        List<Edge> edges = graph.getEdgesList();
 
-        CycleFinder cycleFinder = new CycleFinder(graph);
-        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(5);
+//        CycleFinder cycleFinder = new CycleFinder(graph);
+//        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(3);
 
+        CycleFinder cycleFinder = new CycleFinder(graph);
+        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(500);
+        System.out.println(graphCycles);
 
         List<Color> colorList = new ArrayList<>();
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
         colorList.add(Color.DODGERBLUE);
         colorList.add(Color.BLACK);
         colorList.add(Color.GREEN);

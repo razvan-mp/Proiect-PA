@@ -29,7 +29,7 @@ public class GraphHelper {
         double c = 2 * Math.asin(Math.sqrt(a));
         double r = 6371;
 
-        return (c * r);
+        return (c * r * 1000);
     }
 
     public static void getCycles(List<MapCircle> mapCircles) {
