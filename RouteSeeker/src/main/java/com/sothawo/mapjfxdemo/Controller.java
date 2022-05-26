@@ -22,6 +22,7 @@ import com.sothawo.mapjfx.event.MapLabelEvent;
 import com.sothawo.mapjfx.event.MapViewEvent;
 import com.sothawo.mapjfx.event.MarkerEvent;
 import com.sothawo.mapjfx.offline.OfflineCache;
+import entities.NodesEntity;
 import javafx.animation.Transition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -32,6 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import repos.NodesRepo;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -52,7 +54,8 @@ public class Controller {
     private static final Coordinate coordEstIasi = new Coordinate(47.168813, 27.670672);
     private static final Extent extindereIasi = Extent.forCoordinates(coordNordIasi, coordSudIasi, coordVestIasi, coordEstIasi);
     private static final int ZOOM_DEFAULT = 14;
-    final List<CoordinateLine> pathList = new ArrayList<>();
+    final List<CoordinateLine> pathListExpo = new ArrayList<>();
+    final List<CoordinateLine> pathListDacia = new ArrayList<>();
     final List<Coordinate> predefinedPointsListExpo = new ArrayList<>();
     final List<Coordinate> predefinedPointsListDacia = new ArrayList<>();
     final List<Coordinate> predefinedPointsListPalat = new ArrayList<>();
@@ -130,25 +133,20 @@ public class Controller {
     }
 
     private void addAllPointsList() {
-        try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/csv/expo.csv"))){
-            String[] csvLine;
-            while((csvLine = csvReader.readNext()) != null){
-                this.predefinedPointsListExpo.add(new Coordinate(Double.parseDouble(csvLine[0]),
-                        Double.parseDouble(csvLine[1])));
-            }
-        } catch (IOException | CsvValidationException e) {
-            throw new RuntimeException(e);
+        NodesRepo nodesRepo = new NodesRepo();
+        Integer maxId = nodesRepo.getMaxId(1);
+
+        for (int index = 1; index <= maxId; index++) {
+            NodesEntity nodesEntity = nodesRepo.findById(index);
+            this.predefinedPointsListExpo.add(new Coordinate(nodesEntity.getLatitude(), nodesEntity.getLongitude()));
         }
 
-//        try (CSVReader csvReader = new CSVReader(new FileReader("src/main/resources/csv/rondDacia.csv"))){
-//            String[] csvLine;
-//            while((csvLine = csvReader.readNext()) != null){
-//                this.predefinedPointsListDacia.add(new Coordinate(Double.parseDouble(csvLine[0]),
-//                        Double.parseDouble(csvLine[1])));
-//            }
-//        } catch (IOException | CsvValidationException e) {
-//            throw new RuntimeException(e);
-//        }
+        Integer newMaxId = nodesRepo.getMaxId(2);
+
+        for (int index = maxId + 1; index <= newMaxId; index++) {
+            NodesEntity nodesEntity = nodesRepo.findById(index);
+            this.predefinedPointsListDacia.add(new Coordinate(nodesEntity.getLatitude(), nodesEntity.getLongitude()));
+        }
     }
 
     private void addMarkersAndLabels() {
@@ -198,8 +196,17 @@ public class Controller {
         setControlsDisable(true);
 
         // wire up the location buttons
-        buttonExpo.setOnAction(event -> mapView.setCenter(coordExpo));
-        buttonRondDacia.setOnAction(event -> mapView.setCenter(coordRondDacia));
+        buttonExpo.setOnAction(event -> {
+            mapView.setCenter(coordExpo);
+            deleteGraph(2);
+            drawGraph(1);
+        });
+
+        buttonRondDacia.setOnAction(event -> {
+            mapView.setCenter(coordRondDacia);
+            deleteGraph(1);
+            drawGraph(2);
+        });
 
         buttonAllLocations.setOnAction(event -> mapView.setExtent(extentAllLocations));
 
@@ -259,6 +266,16 @@ public class Controller {
                 .projection(projection)
                 .showZoomControls(false)
                 .build());
+    }
+
+    private void deleteGraph(Integer graphId) {
+        if (graphId == 1) {
+            for (var ceva : pathListExpo)
+               ceva.setVisible(false);
+        } else {
+            for (var ceva : pathListDacia)
+                ceva.setVisible(false);
+        }
     }
 
     private void setupEventHandlers() {
@@ -365,17 +382,66 @@ public class Controller {
         leftControls.setDisable(flag);
     }
 
-    private void drawAllEdges(List<Edge> edges)
-    {
-        for(var edge : edges)
-        {
-            pathList.add(new CoordinateLine(
-                    edge.getSrc().getCenter(),
-                    edge.getDest().getCenter())
-                    .setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+    private void drawAllEdges(List<Edge> edges, Integer graphId) {
+        if (graphId == 1) {
+            for (var edge : edges) {
+                pathListExpo.add(new CoordinateLine(
+                        edge.getSrc().getCenter(),
+                        edge.getDest().getCenter())
+                        .setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+            }
+            for (var path : pathListExpo)
+                mapView.addCoordinateLine(path);
+        } else {
+            for (var edge : edges) {
+                pathListDacia.add(new CoordinateLine(
+                        edge.getSrc().getCenter(),
+                        edge.getDest().getCenter())
+                        .setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+            }
+            for (var path : pathListDacia)
+                mapView.addCoordinateLine(path);
         }
-        for (var path : pathList)
+    }
+
+    private void drawAllCycles(Graph graph, int length, int graphId) {
+        CycleFinder cycleFinder = new CycleFinder(graph);
+        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(length);
+
+        if (graphId == 1) {
+            addCyclesToMap(graph, graphCycles, pathListExpo);
+        } else {
+            addCyclesToMap(graph, graphCycles, pathListDacia);
+        }
+    }
+
+    private void addCyclesToMap(Graph graph, List<List<Integer>> graphCycles, List<CoordinateLine> pathListDacia) {
+        for (int cycleIndex = 0; cycleIndex < graphCycles.size(); cycleIndex++) {
+            for (int vertexIndex = 0; vertexIndex < graphCycles.get(cycleIndex).size() - 1; vertexIndex++) {
+                pathListDacia.add(new CoordinateLine(
+                        graph.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex)).getCenter(),
+                        graph.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex + 1)).getCenter()
+                ).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+            }
+            pathListDacia.add(new CoordinateLine(
+                    graph.getVertexList().get(graphCycles.get(cycleIndex).get(0)).getCenter(),
+                    graph.getVertexList().get(graphCycles.get(cycleIndex).get(graphCycles.get(cycleIndex).size() - 1)).getCenter()
+            ).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
+        }
+
+        for (var path : pathListDacia) {
             mapView.addCoordinateLine(path);
+        }
+    }
+
+    private void drawGraph(Integer graphId) {
+        if (graphId == 1) {
+            Graph graphExpo = new Graph(predefinedExpoMapCircleList, 1);
+            drawAllEdges(graphExpo.getEdgesList(), 1);
+        } else {
+            Graph graphDacia = new Graph(predefinedDaciaMapCircleList, 2);
+            drawAllEdges(graphDacia.getEdgesList(), 2);
+        }
     }
 
     private void afterMapIsInitialized() {
@@ -395,86 +461,5 @@ public class Controller {
             mapView.addMapCircle(mapCircle);
 
         setControlsDisable(false);
-
-        Graph graphExpo = new Graph(predefinedExpoMapCircleList);
-//        drawAllEdges(graphExpo.getEdgesList());
-
-//        Graph graphDacia = new Graph(predefinedDaciaMapCircleList);
-//        printAllEdges(graphDacia.getEdgesList());
-//
-//        CycleFinder cycleFinder = new CycleFinder(graphExpo);
-//        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(3);
-
-        CycleFinder cycleFinder = new CycleFinder(graphExpo);
-        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(500);
-        System.out.println(graphCycles);
-
-        List<Color> colorList = new ArrayList<>();
-        colorList.add(Color.DODGERBLUE);
-        colorList.add(Color.BLACK);
-        colorList.add(Color.GREEN);
-        colorList.add(Color.YELLOW);
-        colorList.add(Color.DARKTURQUOISE);
-        colorList.add(Color.DODGERBLUE);
-        colorList.add(Color.BLACK);
-        colorList.add(Color.GREEN);
-        colorList.add(Color.YELLOW);
-        colorList.add(Color.DARKTURQUOISE);
-        colorList.add(Color.DODGERBLUE);
-        colorList.add(Color.BLACK);
-        colorList.add(Color.GREEN);
-        colorList.add(Color.YELLOW);
-        colorList.add(Color.DARKTURQUOISE);
-        colorList.add(Color.DODGERBLUE);
-        colorList.add(Color.BLACK);
-        colorList.add(Color.GREEN);
-        colorList.add(Color.YELLOW);
-        colorList.add(Color.DARKTURQUOISE);
-        colorList.add(Color.DODGERBLUE);
-        colorList.add(Color.BLACK);
-        colorList.add(Color.GREEN);
-        colorList.add(Color.YELLOW);
-        colorList.add(Color.DARKTURQUOISE);
-        colorList.add(Color.DODGERBLUE);
-        colorList.add(Color.BLACK);
-        colorList.add(Color.GREEN);
-        colorList.add(Color.YELLOW);
-        colorList.add(Color.DARKTURQUOISE);
-
-        for (int cycleIndex = 0; cycleIndex < graphCycles.size(); cycleIndex++) {
-            for (int vertexIndex = 0; vertexIndex < graphCycles.get(cycleIndex).size() - 1; vertexIndex++) {
-                pathList.add(new CoordinateLine(
-                        graphExpo.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex)).getCenter(),
-                        graphExpo.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex + 1)).getCenter()
-                ).setColor(colorList.get(cycleIndex)).setFillColor(colorList.get(cycleIndex)).setVisible(true));
-            }
-            pathList.add(new CoordinateLine(
-                    graphExpo.getVertexList().get(graphCycles.get(cycleIndex).get(0)).getCenter(),
-                    graphExpo.getVertexList().get(graphCycles.get(cycleIndex).get(graphCycles.get(cycleIndex).size() - 1)).getCenter()
-            ).setColor(colorList.get(cycleIndex)).setFillColor(colorList.get(cycleIndex)).setVisible(true));
-        }
-
-        for (var path : pathList) {
-            mapView.addCoordinateLine(path);
-        }
-
-
-//        CycleFinder cycleFinder = new CycleFinder(graph);
-//        cycleFinder.printCycles(graph.getEdgesList().size());
     }
-
-//    private Optional<CoordinateLine> loadCoordinateLine(URL url) {
-//        try (
-//                Stream<String> lines = new BufferedReader(
-//                        new InputStreamReader(url.openStream(), StandardCharsets.UTF_8)).lines()
-//        ) {
-//            return Optional.of(new CoordinateLine(
-//                    lines.map(line -> line.split(";")).filter(array -> array.length == 2)
-//                            .map(values -> new Coordinate(Double.valueOf(values[0]), Double.valueOf(values[1])))
-//                            .collect(Collectors.toList())));
-//        } catch (IOException | NumberFormatException e) {
-//            e.printStackTrace();
-//        }
-//        return Optional.empty();
-//    }
 }

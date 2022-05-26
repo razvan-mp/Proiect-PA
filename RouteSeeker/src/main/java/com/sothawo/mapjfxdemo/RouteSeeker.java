@@ -22,6 +22,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+
 public class RouteSeeker extends Application {
 
     /** Logger for the class */
@@ -31,10 +34,9 @@ public class RouteSeeker extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        String fxmlFile = "/fxml/DemoApp.fxml";
+    public void start(Stage primaryStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent rootNode = fxmlLoader.load(getClass().getResourceAsStream(fxmlFile));
+        Parent rootNode = fxmlLoader.load(new FileInputStream("src/main/resources/fxml/DemoApp.fxml"));
 
         final Controller controller = fxmlLoader.getController();
         final Projection projection = getParameters().getUnnamed().contains("wgs84")
@@ -46,6 +48,5 @@ public class RouteSeeker extends Application {
         primaryStage.setTitle("Route Seeker");
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
 }
