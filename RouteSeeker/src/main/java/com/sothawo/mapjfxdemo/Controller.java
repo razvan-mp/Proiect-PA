@@ -33,13 +33,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -186,7 +184,7 @@ public class Controller {
         try {
             Files.createDirectories(Paths.get(cacheDir));
             offlineCache.setCacheDirectory(cacheDir);
-            offlineCache.setActive(true);
+//            offlineCache.setActive(true);
         } catch (IOException e) {
             System.out.println(e.getStackTrace());
         }
@@ -367,7 +365,7 @@ public class Controller {
         leftControls.setDisable(flag);
     }
 
-    private void printAllEdges(List<Edge> edges)
+    private void drawAllEdges(List<Edge> edges)
     {
         for(var edge : edges)
         {
@@ -399,70 +397,70 @@ public class Controller {
         setControlsDisable(false);
 
         Graph graphExpo = new Graph(predefinedExpoMapCircleList);
-        printAllEdges(graphExpo.getEdgesList());
+//        drawAllEdges(graphExpo.getEdgesList());
 
 //        Graph graphDacia = new Graph(predefinedDaciaMapCircleList);
 //        printAllEdges(graphDacia.getEdgesList());
-
-//        CycleFinder cycleFinder = new CycleFinder(graph);
+//
+//        CycleFinder cycleFinder = new CycleFinder(graphExpo);
 //        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(3);
 
+        CycleFinder cycleFinder = new CycleFinder(graphExpo);
+        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(500);
+        System.out.println(graphCycles);
+
+        List<Color> colorList = new ArrayList<>();
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+        colorList.add(Color.DODGERBLUE);
+        colorList.add(Color.BLACK);
+        colorList.add(Color.GREEN);
+        colorList.add(Color.YELLOW);
+        colorList.add(Color.DARKTURQUOISE);
+
+        for (int cycleIndex = 0; cycleIndex < graphCycles.size(); cycleIndex++) {
+            for (int vertexIndex = 0; vertexIndex < graphCycles.get(cycleIndex).size() - 1; vertexIndex++) {
+                pathList.add(new CoordinateLine(
+                        graphExpo.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex)).getCenter(),
+                        graphExpo.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex + 1)).getCenter()
+                ).setColor(colorList.get(cycleIndex)).setFillColor(colorList.get(cycleIndex)).setVisible(true));
+            }
+            pathList.add(new CoordinateLine(
+                    graphExpo.getVertexList().get(graphCycles.get(cycleIndex).get(0)).getCenter(),
+                    graphExpo.getVertexList().get(graphCycles.get(cycleIndex).get(graphCycles.get(cycleIndex).size() - 1)).getCenter()
+            ).setColor(colorList.get(cycleIndex)).setFillColor(colorList.get(cycleIndex)).setVisible(true));
+        }
+
+        for (var path : pathList) {
+            mapView.addCoordinateLine(path);
+        }
+
+
 //        CycleFinder cycleFinder = new CycleFinder(graph);
-//        List<List<Integer>> graphCycles = cycleFinder.getAllCyclesOfLength(500);
-//        System.out.println(graphCycles);
-//
-//        List<Color> colorList = new ArrayList<>();
-//        colorList.add(Color.DODGERBLUE);
-//        colorList.add(Color.BLACK);
-//        colorList.add(Color.GREEN);
-//        colorList.add(Color.YELLOW);
-//        colorList.add(Color.DARKTURQUOISE);
-//        colorList.add(Color.DODGERBLUE);
-//        colorList.add(Color.BLACK);
-//        colorList.add(Color.GREEN);
-//        colorList.add(Color.YELLOW);
-//        colorList.add(Color.DARKTURQUOISE);
-//        colorList.add(Color.DODGERBLUE);
-//        colorList.add(Color.BLACK);
-//        colorList.add(Color.GREEN);
-//        colorList.add(Color.YELLOW);
-//        colorList.add(Color.DARKTURQUOISE);
-//        colorList.add(Color.DODGERBLUE);
-//        colorList.add(Color.BLACK);
-//        colorList.add(Color.GREEN);
-//        colorList.add(Color.YELLOW);
-//        colorList.add(Color.DARKTURQUOISE);
-//        colorList.add(Color.DODGERBLUE);
-//        colorList.add(Color.BLACK);
-//        colorList.add(Color.GREEN);
-//        colorList.add(Color.YELLOW);
-//        colorList.add(Color.DARKTURQUOISE);
-//        colorList.add(Color.DODGERBLUE);
-//        colorList.add(Color.BLACK);
-//        colorList.add(Color.GREEN);
-//        colorList.add(Color.YELLOW);
-//        colorList.add(Color.DARKTURQUOISE);
-//
-//        for (int cycleIndex = 0; cycleIndex < graphCycles.size(); cycleIndex++) {
-//            for (int vertexIndex = 0; vertexIndex < graphCycles.get(cycleIndex).size() - 1; vertexIndex++) {
-//                pathList.add(new CoordinateLine(
-//                        graph.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex)).getCenter(),
-//                        graph.getVertexList().get(graphCycles.get(cycleIndex).get(vertexIndex + 1)).getCenter()
-//                ).setColor(colorList.get(cycleIndex)).setFillColor(colorList.get(cycleIndex)).setVisible(true));
-//            }
-//            pathList.add(new CoordinateLine(
-//                    graph.getVertexList().get(graphCycles.get(cycleIndex).get(0)).getCenter(),
-//                    graph.getVertexList().get(graphCycles.get(cycleIndex).get(graphCycles.get(cycleIndex).size() - 1)).getCenter()
-//            ).setColor(colorList.get(cycleIndex)).setFillColor(colorList.get(cycleIndex)).setVisible(true));
-//        }
-//
-//        for (var path : pathList) {
-//            mapView.addCoordinateLine(path);
-//        }
-//
-//
-////        CycleFinder cycleFinder = new CycleFinder(graph);
-////        cycleFinder.printCycles(graph.getEdgesList().size());
+//        cycleFinder.printCycles(graph.getEdgesList().size());
     }
 
 //    private Optional<CoordinateLine> loadCoordinateLine(URL url) {

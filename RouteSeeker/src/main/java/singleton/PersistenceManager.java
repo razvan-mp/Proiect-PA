@@ -4,7 +4,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 public class PersistenceManager {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     private static final PersistenceManager singleton = new PersistenceManager();
 
     protected EntityManagerFactory entityManagerFactory;
