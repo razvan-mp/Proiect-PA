@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CycleFinder {
-    static List<List<Integer>> graph = new ArrayList<>();
-    static List<List<Integer>> cycles = new ArrayList<>();
+    List<List<Integer>> graph = new ArrayList<>();
+    List<List<Integer>> cycles = new ArrayList<>();
     Graph inputGraph;
 
     CycleFinder(Graph graph) {
@@ -26,7 +26,7 @@ public class CycleFinder {
         return returnValue;
     }
 
-    static boolean isNew(List<Integer> path) {
+    boolean isNew(List<Integer> path) {
         for (List<Integer> cycle : cycles)
             if (equals(cycle, path))
                 return false;
@@ -73,7 +73,7 @@ public class CycleFinder {
         return normalizePath(inverted);
     }
 
-    static void findNewCycles(List<Integer> path) {
+    void findNewCycles(List<Integer> path) {
         int node = path.get(0);
         int nodeToVisit;
         List<Integer> subPath = new ArrayList<>();
@@ -112,7 +112,7 @@ public class CycleFinder {
         }
     }
 
-    public List<List<Integer>> getAllCyclesOfLength(double length) {
+    public List<List<Integer>> getAllCycles() {
         for (List<Integer> pair : graph)
             for (Integer node : pair) {
                 List<Integer> fromPair = new ArrayList<>();
@@ -123,13 +123,12 @@ public class CycleFinder {
         List<List<Integer>> allCycles = new ArrayList<>();
 
         int index = 0;
-        for (List<Integer> cycle : cycles)
-            if (cycleLengthIsWithin(cycle, length)) {
-                allCycles.add(new ArrayList<>());
-                for (Integer node : cycle)
-                    allCycles.get(index).add(node);
-                index++;
-            }
+        for (List<Integer> cycle : cycles) {
+            allCycles.add(new ArrayList<>());
+            for (Integer node : cycle)
+                allCycles.get(index).add(node);
+            index++;
+        }
 
         return allCycles;
     }

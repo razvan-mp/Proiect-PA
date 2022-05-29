@@ -1,7 +1,6 @@
 package com.sothawo.mapjfxdemo;
 
 import com.sothawo.mapjfx.MapCircle;
-import com.sothawo.mapjfxdemo.Edge;
 import repos.AdjacencyRepo;
 import repos.NodesRepo;
 
@@ -28,15 +27,9 @@ class Graph {
         int toSubtract = 0;
 
         switch(graphId) {
-            case 1 -> {
-                toSubtract = 1;
-            }
-            case 2 -> {
-                toSubtract = nodesRepo.getMaxId(1) + 1;
-            }
-            case 3 -> {
-                toSubtract = nodesRepo.getMaxId(2) + 1;
-            }
+            case 1 -> toSubtract = 1;
+            case 2 -> toSubtract = nodesRepo.getMaxId(1) + 1;
+            case 3 -> toSubtract = nodesRepo.getMaxId(2) + 1;
         }
 
         for (int index = toSubtract - 1; index < maxId; index++) {
