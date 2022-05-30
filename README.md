@@ -11,7 +11,7 @@ On click, the view is moved to the respective section and a graph with all the p
 On the length specifier input field, on each keystroke the drawing algorithm is called and cycles are calculated such that they respect the contraint given by the user.
 
 ## Technologies used
-- JavaFX -> for the map and view
-- JPA -> for DB communication
-- JDBC -> for DB communication
-- Sockets -> for Client-Server communication
+- JavaFX → for the map and view
+- JPA → for DB communication
+- JDBC → for DB communication
+- Sockets → for Client-Server communication
