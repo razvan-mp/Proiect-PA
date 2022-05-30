@@ -21,8 +21,6 @@ import algorithm.GraphHelper;
 import com.sothawo.mapjfx.*;
 import entities.NodesEntity;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -86,8 +84,9 @@ public class Controller {
     }
 
     private void addColors() {
-        colorList = List.of(new Color[]{Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN,
-                Color.BLUE, Color.INDIGO, Color.VIOLET, Color.HOTPINK, Color.DARKTURQUOISE, Color.SALMON});
+        colorList = List.of(Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN,
+                Color.BLUE, Color.INDIGO, Color.VIOLET, Color.HOTPINK, Color.DARKTURQUOISE, Color.SALMON,
+                Color.GRAY, Color.BLACK, Color.DARKCYAN, Color.DARKSEAGREEN);
     }
 
     private void addAllPointsList() {
