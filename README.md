@@ -15,3 +15,4 @@ On the length specifier input field, on each keystroke the drawing algorithm is 
 - JPA → for DB communication
 - JDBC → for DB communication
 - Sockets → for Client-Server communication
+- JavaDoc API → for creating project documentation
