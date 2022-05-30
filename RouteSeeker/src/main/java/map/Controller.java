@@ -13,34 +13,36 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.sothawo.mapjfxdemo;
+package map;
 
+import algorithm.CycleFinder;
+import algorithm.Graph;
+import algorithm.GraphHelper;
 import com.sothawo.mapjfx.*;
 import entities.NodesEntity;
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import repos.NodesRepo;
+import utilities.Info;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static utilities.Info.COORD_ROND_DACIA;
+import static utilities.Info.EXTINDERE_IASI;
+
 public class Controller {
+    private static final List<CoordinateLine> drawnCycles = new ArrayList<>();
+    private static final int ZOOM_DEFAULT = 16;
     private static Graph graphExpo;
     private static Graph graphDacia;
     private static List<List<Integer>> cyclesExpo;
     private static List<List<Integer>> cyclesDacia;
-    private static final Coordinate coordExpo = new Coordinate(47.18458144737681, 27.565773142875663);
-    private static final Coordinate coordRondDacia = new Coordinate(47.16852245494382, 27.553073638333757);
-    private static final Coordinate coordNordIasi = new Coordinate(47.230760, 27.583033);
-    private static final Coordinate coordSudIasi = new Coordinate(47.126273, 27.596461);
-    private static final Coordinate coordVestIasi = new Coordinate(47.175779, 27.499281);
-    private static final Coordinate coordEstIasi = new Coordinate(47.168813, 27.670672);
-    private static final Extent extindereIasi = Extent.forCoordinates(coordNordIasi, coordSudIasi, coordVestIasi, coordEstIasi);
-    private static final List<CoordinateLine> drawnCycles = new ArrayList<>();
-    private static final int ZOOM_DEFAULT = 16;
     private static int location;
     private static List<Color> colorList = new ArrayList<>();
     final List<CoordinateLine> pathListExpo = new ArrayList<>();
@@ -141,14 +143,14 @@ public class Controller {
 
         buttonExpo.setOnAction(event -> {
             location = 1;
-            mapView.setCenter(coordExpo);
+            mapView.setCenter(Info.COORD_EXPO);
             deleteGraph(2);
             drawAllCycles(1);
         });
 
         buttonRondDacia.setOnAction(event -> {
             location = 2;
-            mapView.setCenter(coordRondDacia);
+            mapView.setCenter(COORD_ROND_DACIA);
             deleteGraph(1);
             drawAllCycles(2);
         });
@@ -166,7 +168,7 @@ public class Controller {
 
         checkConstrainIasi.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             if (newValue) {
-                mapView.constrainExtent(extindereIasi);
+                mapView.constrainExtent(EXTINDERE_IASI);
             } else {
                 mapView.clearConstrainExtent();
             }
@@ -191,10 +193,8 @@ public class Controller {
         for (var path : pathList)
             path.setVisible(false);
 
-        if (drawnCycles != null) {
-            for (CoordinateLine drawnPath : drawnCycles)
-                drawnPath.setVisible(false);
-        }
+        for (CoordinateLine drawnPath : drawnCycles)
+            drawnPath.setVisible(false);
 
         for (var cycle : cycleList)
             if (cycleLengthIsWithin(length, cycle)) {
@@ -256,28 +256,6 @@ public class Controller {
         leftControls.setDisable(flag);
     }
 
-    private void drawAllEdges(List<Edge> edges, Integer graphId) {
-        if (graphId == 1) {
-            for (var edge : edges) {
-                pathListExpo.add(new CoordinateLine(
-                        edge.getSrc().getCenter(),
-                        edge.getDest().getCenter())
-                        .setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
-            }
-            for (var path : pathListExpo)
-                mapView.addCoordinateLine(path);
-        } else {
-            for (var edge : edges) {
-                pathListDacia.add(new CoordinateLine(
-                        edge.getSrc().getCenter(),
-                        edge.getDest().getCenter())
-                        .setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
-            }
-            for (var path : pathListDacia)
-                mapView.addCoordinateLine(path);
-        }
-    }
-
     private void drawAllCycles(int graphId) {
         if (graphId == 1) {
             addCyclesToMap(graphExpo, cyclesExpo, pathListExpo);
@@ -305,19 +283,9 @@ public class Controller {
         }
     }
 
-    private void drawGraph(Integer graphId) {
-        if (graphId == 1) {
-            Graph graphExpo = new Graph(predefinedExpoMapCircleList, 1);
-            drawAllEdges(graphExpo.getEdgesList(), 1);
-        } else {
-            Graph graphDacia = new Graph(predefinedDaciaMapCircleList, 2);
-            drawAllEdges(graphDacia.getEdgesList(), 2);
-        }
-    }
-
     private void afterMapIsInitialized() {
         mapView.setZoom(ZOOM_DEFAULT);
-        mapView.setCenter(coordExpo);
+        mapView.setCenter(Info.COORD_EXPO);
 
         for (var mapCircle : predefinedExpoMapCircleList)
             mapView.addMapCircle(mapCircle);

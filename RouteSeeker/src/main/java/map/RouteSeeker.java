@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.sothawo.mapjfxdemo;
+package map;
 
 import com.sothawo.mapjfx.Projection;
 import javafx.application.Application;
@@ -27,10 +27,12 @@ import java.io.IOException;
 
 public class RouteSeeker extends Application {
 
-    /** Logger for the class */
+    /**
+     * Logger for the class
+     */
 
-    public static void main(String[] args) {
-        launch(args);
+    public static void initApp() {
+        launch();
     }
 
     @Override

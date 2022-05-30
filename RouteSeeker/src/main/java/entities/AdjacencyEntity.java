@@ -1,6 +1,7 @@
 package entities;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "adjacency", schema = "public", catalog = "route_seeker")
@@ -19,38 +20,6 @@ public class AdjacencyEntity {
     @Column(name = "id_node2")
     private Integer idNode2;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Integer getIdGraph() {
-        return idGraph;
-    }
-
-    public void setIdGraph(Integer idGraph) {
-        this.idGraph = idGraph;
-    }
-
-    public Integer getIdNode1() {
-        return idNode1;
-    }
-
-    public void setIdNode1(Integer idNode1) {
-        this.idNode1 = idNode1;
-    }
-
-    public Integer getIdNode2() {
-        return idNode2;
-    }
-
-    public void setIdNode2(Integer idNode2) {
-        this.idNode2 = idNode2;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,11 +28,9 @@ public class AdjacencyEntity {
         AdjacencyEntity that = (AdjacencyEntity) o;
 
         if (id != that.id) return false;
-        if (idGraph != null ? !idGraph.equals(that.idGraph) : that.idGraph != null) return false;
-        if (idNode1 != null ? !idNode1.equals(that.idNode1) : that.idNode1 != null) return false;
-        if (idNode2 != null ? !idNode2.equals(that.idNode2) : that.idNode2 != null) return false;
-
-        return true;
+        if (!Objects.equals(idGraph, that.idGraph)) return false;
+        if (!Objects.equals(idNode1, that.idNode1)) return false;
+        return Objects.equals(idNode2, that.idNode2);
     }
 
     @Override

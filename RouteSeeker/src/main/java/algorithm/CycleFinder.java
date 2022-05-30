@@ -1,6 +1,4 @@
-package com.sothawo.mapjfxdemo;
-
-import com.sothawo.mapjfx.MapCircle;
+package algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +8,7 @@ public class CycleFinder {
     List<List<Integer>> cycles = new ArrayList<>();
     Graph inputGraph;
 
-    CycleFinder(Graph graph) {
+    public CycleFinder(Graph graph) {
         buildGraph(graph);
         this.inputGraph = graph;
     }
@@ -24,14 +22,6 @@ public class CycleFinder {
                 break;
             }
         return returnValue;
-    }
-
-    boolean isNew(List<Integer> path) {
-        for (List<Integer> cycle : cycles)
-            if (equals(cycle, path))
-                return false;
-
-        return true;
     }
 
     static int smallestNode(List<Integer> path) {
@@ -73,6 +63,14 @@ public class CycleFinder {
         return normalizePath(inverted);
     }
 
+    boolean isNew(List<Integer> path) {
+        for (List<Integer> cycle : cycles)
+            if (equals(cycle, path))
+                return false;
+
+        return true;
+    }
+
     void findNewCycles(List<Integer> path) {
         int node = path.get(0);
         int nodeToVisit;
@@ -104,7 +102,7 @@ public class CycleFinder {
                 }
     }
 
-    void buildGraph(Graph inputGraph) {
+    public void buildGraph(Graph inputGraph) {
         for (int index = 0; index < inputGraph.getEdgesList().size(); index++) {
             graph.add(new ArrayList<>());
             graph.get(index).add(inputGraph.getVertexList().indexOf(inputGraph.getEdgesList().get(index).getSrc()));
@@ -131,33 +129,5 @@ public class CycleFinder {
         }
 
         return allCycles;
-    }
-
-    private boolean cycleLengthIsWithin(List<Integer> cycle, double length) {
-        double cycleLength = 0;
-
-        double distance;
-        MapCircle firstNode, secondNode;
-        for (int index = 0; index < cycle.size() - 1; index++) {
-            firstNode = inputGraph.getVertexList().get(cycle.get(index));
-            secondNode = inputGraph.getVertexList().get(cycle.get(index + 1));
-            distance = GraphHelper.getDistance(firstNode, secondNode);
-            if (distance > length)
-                return false;
-            cycleLength += distance;
-        }
-
-        firstNode = inputGraph.getVertexList().get(0);
-        secondNode = inputGraph.getVertexList().get(cycle.get(cycle.size() - 1));
-        distance = GraphHelper.getDistance(firstNode, secondNode);
-        if (distance > length)
-            return false;
-        cycleLength += distance;
-
-
-        if (length <= 1000 && ((cycleLength - 250 < length) || (cycleLength + 250 < length))) {
-            System.out.println("Cycle length: " + cycleLength);
-            return true;
-        } else return length >= 1000 && ((cycleLength - 500 < length) || (cycleLength + 500 < length));
     }
 }

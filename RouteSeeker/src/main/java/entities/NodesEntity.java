@@ -1,6 +1,7 @@
 package entities;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "nodes", schema = "public", catalog = "route_seeker")
@@ -19,36 +20,12 @@ public class NodesEntity {
     @Column(name = "longitude")
     private Double longitude;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Integer getIdGraph() {
-        return idGraph;
-    }
-
-    public void setIdGraph(Integer idGraph) {
-        this.idGraph = idGraph;
-    }
-
     public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
     public Double getLongitude() {
         return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
     }
 
     @Override
@@ -59,11 +36,9 @@ public class NodesEntity {
         NodesEntity that = (NodesEntity) o;
 
         if (id != that.id) return false;
-        if (idGraph != null ? !idGraph.equals(that.idGraph) : that.idGraph != null) return false;
-        if (latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) return false;
-        if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
-
-        return true;
+        if (!Objects.equals(idGraph, that.idGraph)) return false;
+        if (!Objects.equals(latitude, that.latitude)) return false;
+        return Objects.equals(longitude, that.longitude);
     }
 
     @Override
