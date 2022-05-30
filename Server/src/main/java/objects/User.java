@@ -1,5 +1,8 @@
 package objects;
 
+/**
+ * User model for ease of communication with database
+ */
 public class User {
     String name;
 

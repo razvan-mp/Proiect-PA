@@ -10,17 +10,28 @@ import java.io.IOException;
 import java.net.Socket;
 import java.sql.SQLException;
 
+/**
+ * Class for managing commands given by a <code>Client</code> instance to the <code>Server</code>
+ */
 public class ClientCommand implements Runnable {
     DataInputStream read;
     DataOutputStream write;
     Socket socket;
 
+    /**
+     * Opens sockets for communicating with the <code>Client</code>
+     * @param socket socket to be opened
+     * @throws IOException thrown in case of socket creation failure
+     */
     public ClientCommand(Socket socket) throws IOException {
         this.read = new DataInputStream(socket.getInputStream());
         this.write = new DataOutputStream(socket.getOutputStream());
         this.socket = socket;
     }
 
+    /**
+     * Override for <code>run()</code> that reads and manages client commands
+     */
     @Override
     public void run() {
         String line;

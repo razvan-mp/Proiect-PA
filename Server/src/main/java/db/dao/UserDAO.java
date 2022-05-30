@@ -6,7 +6,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * UserDAO for working with the <code>users</code> database
+ */
 public class UserDAO {
+    /**
+     * Adds a new user to the database
+     * @param name name of the user to be added
+     * @throws SQLException thrown in case of an event on <code>insert</code>
+     */
     public static void create(String name) throws SQLException {
         Connection con = Database.getConnection();
         try (PreparedStatement pstmt = con.prepareStatement(
@@ -17,6 +25,12 @@ public class UserDAO {
         }
     }
 
+    /**
+     * Finds a user based on the ID provided
+     * @param userId ID to be searched
+     * @return name of the user
+     * @throws SQLException thrown in case of an event on <code>select</code>
+     */
     public static String findById(Integer userId) throws SQLException {
         Connection connection = Database.getConnection();
 
@@ -28,6 +42,12 @@ public class UserDAO {
         return resultSet.next() ? resultSet.getString(1) : null;
     }
 
+    /**
+     * Finds a user based on the name provided
+     * @param name name of the user to be searched
+     * @return ID of the user searched
+     * @throws SQLException thrown in case of an event on <code>select</code>
+     */
     public static Integer findByName(String name) throws SQLException {
         Connection connection = Database.getConnection();
 

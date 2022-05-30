@@ -2,6 +2,10 @@ package networking;
 
 import java.io.IOException;
 
+/**
+ * Main <code>Server</code> class that manages the incoming connections and creates a separate thread for
+ * each connection
+ */
 public class Server {
     public static boolean serverRunning = true;
     private static int userCounter = 0;

@@ -2,6 +2,9 @@ package utilitaries;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Timeout class for ending a client's connection when no commands are entered
+ */
 public class ConnectionTimeout implements Runnable {
     private final int defaultTimer;
     private int seconds;

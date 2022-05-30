@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"networking","l":"ClientCommand"},{"p":"utilitaries","l":"ConnectionTimeout"},{"p":"db.singleton","l":"Database"},{"p":"app","l":"Main"},{"p":"networking","l":"Server"},{"p":"networking","l":"ServerSocket"},{"p":"objects","l":"User"},{"p":"db.dao","l":"UserDAO"}];updateSearchResults();
