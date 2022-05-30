@@ -9,32 +9,23 @@ public class PersistenceManager {
 
     protected EntityManagerFactory entityManagerFactory;
 
-    public static PersistenceManager getInstance(){ return singleton;}
+    private PersistenceManager() {
+    }
 
-    private PersistenceManager(){}
+    public static PersistenceManager getInstance() {
+        return singleton;
+    }
 
-    protected void createEntityManagerFactory(){
+    protected void createEntityManagerFactory() {
         this.entityManagerFactory = Persistence.createEntityManagerFactory("default");
 
-        if(DEBUG)
+        if (DEBUG)
             System.out.println("Persistence started at " + new java.util.Date());
     }
 
-    public EntityManagerFactory getEntityManagerFactory(){
-        if(entityManagerFactory == null)
+    public EntityManagerFactory getEntityManagerFactory() {
+        if (entityManagerFactory == null)
             createEntityManagerFactory();
         return entityManagerFactory;
-    }
-
-    public void closeEntityManagerFactory(){
-        if(entityManagerFactory != null){
-            entityManagerFactory.close();
-            entityManagerFactory = null;
-
-            if(DEBUG)
-            {
-                System.out.println("Persistence finished at " + new java.util.Date());
-            }
-        }
     }
 }
