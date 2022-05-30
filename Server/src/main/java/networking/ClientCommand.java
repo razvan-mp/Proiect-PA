@@ -1,6 +1,7 @@
 package networking;
 
 import db.dao.UserDAO;
+import exceptions.UserNotFoundException;
 import objects.User;
 import utilitaries.ConnectionTimeout;
 
@@ -20,6 +21,7 @@ public class ClientCommand implements Runnable {
 
     /**
      * Opens sockets for communicating with the <code>Client</code>
+     *
      * @param socket socket to be opened
      * @throws IOException thrown in case of socket creation failure
      */
@@ -50,7 +52,7 @@ public class ClientCommand implements Runnable {
                 System.out.println(Server.getUserCounter());
                 System.out.println(Server.isUseCounter());
 
-                if (connectionTimeout.isConnectionTimedOut()){ // && connectedUser != null) {
+                if (connectionTimeout.isConnectionTimedOut()) { // && connectedUser != null) {
                     write.writeUTF("Connection timed out.\n");
                     exit = true;
                     System.exit(0);
@@ -100,13 +102,19 @@ public class ClientCommand implements Runnable {
                         else if (connectedUser != null)
                             write.writeUTF("Can't log in while logged in.\nEnter command: ");
                         else {
-                            Integer id = UserDAO.findByName(components[1]);
+                            try {
+                                Integer id = UserDAO.findByName(components[1]);
 
-                            if (id == null)
-                                write.writeUTF("User doesn't exist.\nEnter command: ");
-                            else {
-                                connectedUser = new User(components[1]);
-                                write.writeUTF("User " + components[1] + " connected.\nEnter command: ");
+                                if (id == null) {
+                                    write.writeUTF("User doesn't exist.\nEnter command: ");
+                                    throw new UserNotFoundException("User doesn't exist.");
+                                } else {
+                                    connectedUser = new User(components[1]);
+                                    write.writeUTF("User " + components[1] + " connected.\nEnter command: ");
+                                }
+
+                            } catch (UserNotFoundException e) {
+                                e.printStackTrace();
                             }
                         }
                         connectionTimeout.resetTimeout();
@@ -120,9 +128,7 @@ public class ClientCommand implements Runnable {
                         }
                         connectionTimeout.resetTimeout();
                     }
-                    case "open_map" -> {
-                        write.writeUTF("Open map.\n");
-                    }
+                    case "open_map" -> write.writeUTF("Open map.\n");
                     case "help" -> {
                         String message;
                         if (connectedUser == null) {
@@ -147,7 +153,7 @@ public class ClientCommand implements Runnable {
                         connectionTimeout.resetTimeout();
                     }
                 }
-            } catch (IOException | SQLException ex){//| SQLException ex) {
+            } catch (IOException | SQLException ex) {//| SQLException ex) {
                 ex.printStackTrace();
             }
         }
