@@ -10,16 +10,20 @@ import javafx.stage.Stage;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * Main map class
+ */
 public class RouteSeeker extends Application implements Runnable{
-
-    /**
-     * Logger for the class
-     */
-
     public void run() {
         launch();
     }
 
+    /**
+     * Overriden <code>start</code> method that gets the <code>FXML</code> for the project and creates
+     * the scene based on it
+     * @param primaryStage app stage
+     * @throws IOException thrown in the event that the <code>FXML</code> config file is not found
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();

@@ -1,10 +1,12 @@
 package app;
 
-import map.RouteSeeker;
 import networking.Client;
 
 import java.io.IOException;
 
+/**
+ * Main class that initializes a connection and starts the application
+ */
 public class Main {
     public static void main(String[] args) {
         try {

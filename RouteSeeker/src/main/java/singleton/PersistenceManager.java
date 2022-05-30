@@ -3,6 +3,9 @@ package singleton;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+/**
+ * Persistence manager that uses an <code>entityManagerFactory</code> to persist data from the tables
+ */
 public class PersistenceManager {
     public static final boolean DEBUG = false;
     private static final PersistenceManager singleton = new PersistenceManager();

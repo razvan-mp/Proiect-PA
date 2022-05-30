@@ -3,6 +3,9 @@ package entities;
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * Entity class for the <code>nodes</code> table in <code>PostgreSQL</code>
+ */
 @Entity
 @Table(name = "nodes", schema = "public", catalog = "route_seeker")
 public class NodesEntity {

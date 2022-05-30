@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * Client class that manages commands to the server in regard to working with the application
+ */
 public class Client {
     public Client(String address, int port) throws IOException{
         Socket socket;

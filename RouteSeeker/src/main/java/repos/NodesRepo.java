@@ -6,6 +6,9 @@ import singleton.PersistenceManager;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+/**
+ * Repository class for the <code>nodes</code> table
+ */
 public class NodesRepo {
     private final EntityManagerFactory entityManagerFactory = PersistenceManager.getInstance().getEntityManagerFactory();
 

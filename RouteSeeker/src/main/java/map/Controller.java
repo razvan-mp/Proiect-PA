@@ -34,6 +34,9 @@ import java.util.Objects;
 import static utilities.Info.COORD_ROND_DACIA;
 import static utilities.Info.EXTINDERE_IASI;
 
+/**
+ * Controller class for the <code>MVC</code> model, uses <code>JavaFX</code>
+ */
 public class Controller {
     private static final List<CoordinateLine> drawnCycles = new ArrayList<>();
     private static final int ZOOM_DEFAULT = 16;
@@ -77,18 +80,27 @@ public class Controller {
     @FXML
     private CheckBox checkConstrainIasi;
 
+    /**
+     * Initializes the color and <code>MapCircle</code> lists
+     */
     public Controller() {
         addColors();
         addAllPointsList();
         addMapCircles();
     }
 
+    /**
+     * Adds colors to the <code>colorList</code> list to be used for drawing cycles
+     */
     private void addColors() {
         colorList = List.of(Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN,
                 Color.BLUE, Color.INDIGO, Color.VIOLET, Color.HOTPINK, Color.DARKTURQUOISE, Color.SALMON,
                 Color.GRAY, Color.BLACK, Color.DARKCYAN, Color.DARKSEAGREEN);
     }
 
+    /**
+     * Adds all points from the DB to the predefined point lists
+     */
     private void addAllPointsList() {
         NodesRepo nodesRepo = new NodesRepo();
         Integer maxId = nodesRepo.getMaxId(1);
@@ -106,6 +118,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Adds the <code>MapCircle</code>s to the predefined lists, in order to be drawn on the map
+     */
     private void addMapCircles() {
         for (var point : predefinedPointsListExpo)
             predefinedExpoMapCircleList.add(new MapCircle(point, 10).setVisible(true).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE));
@@ -114,6 +129,10 @@ public class Controller {
             predefinedDaciaMapCircleList.add(new MapCircle(point, 10).setVisible(true).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE));
     }
 
+    /**
+     * Initializes the map and its controls (buttons and input field) in order to create the app window
+     * @param projection
+     */
     public void initMapAndControls(Projection projection) {
         mapView.setCustomMapviewCssURL(Objects.requireNonNull(getClass().getResource("/custom_mapview.css")));
         leftControls.setExpandedPane(optionsLocations);
@@ -179,6 +198,10 @@ public class Controller {
                 .build());
     }
 
+    /**
+     * Utility method to call the <code>createCycles</code> method with the appropriate parameters
+     * @param length the length of the cycle to be drawn on the map
+     */
     private void filterCycles(double length) {
         Integer counter = 0;
         if (location == 1) {
@@ -188,6 +211,13 @@ public class Controller {
         }
     }
 
+    /**
+     * Creates the cycles and calls the <code>drawCycle</code> method with the appropriate parameters
+     * @param length length of the cycle to be drawn
+     * @param counter cycle ID
+     * @param pathList list of <code>JavaFX</code> <code>CoordinateLine</code>s to be drawn
+     * @param cycleList list of cycles to be filtered and drawn
+     */
     private void createCycles(double length, Integer counter, List<CoordinateLine> pathList, List<List<Integer>> cycleList) {
         for (var path : pathList)
             path.setVisible(false);
@@ -202,6 +232,11 @@ public class Controller {
             }
     }
 
+    /**
+     * Adds the <code>CoordinateLine</code>s with respect to the generated cycles to the <code>mapView</code>
+     * @param cycle cycle to be added to the <code>mapView</code>
+     * @param count cycle ID
+     */
     private void drawCycle(List<Integer> cycle, Integer count) {
         CoordinateLine pathToDraw;
         List<MapCircle> mapCircleList;
@@ -222,6 +257,12 @@ public class Controller {
         mapView.addCoordinateLine(pathToDraw);
     }
 
+    /**
+     * Checks if the current cycle is within the specified length
+     * @param length path length constraint
+     * @param cycle cycle to be verified
+     * @return <code>true</code> if the cycle length is within the constraint, <code>false</code> otherwise
+     */
     private boolean cycleLengthIsWithin(double length, List<Integer> cycle) {
         int cycleLength = 0;
         List<MapCircle> mapCircles;
@@ -240,6 +281,10 @@ public class Controller {
         return !(cycleLength > length + 250) && !(cycleLength < length - 250);
     }
 
+    /**
+     * Hides a graph from the <code>mapView</code>
+     * @param graphId ID of the graph to be hid
+     */
     private void deleteGraph(Integer graphId) {
         if (graphId == 1) {
             for (var path : pathListExpo)
@@ -250,11 +295,19 @@ public class Controller {
         }
     }
 
+    /**
+     * Enables or disables the map controls based on the <code>flag</code> parameter
+     * @param flag <code>true</code> if the controls should be enabled, <code>false</code> otherwise
+     */
     private void setControlsDisable(boolean flag) {
         topControls.setDisable(flag);
         leftControls.setDisable(flag);
     }
 
+    /**
+     * Draws all the cycles from the graph with <code>graphId</code> when the respective button is clicked
+     * @param graphId graph's ID
+     */
     private void drawAllCycles(int graphId) {
         if (graphId == 1) {
             addCyclesToMap(graphExpo, cyclesExpo, pathListExpo);
@@ -263,25 +316,34 @@ public class Controller {
         }
     }
 
-    private void addCyclesToMap(Graph graph, List<List<Integer>> graphCycles, List<CoordinateLine> pathListDacia) {
+    /**
+     * Sets all the cycles from the graph to be visible on the <code>mapView</code>
+     * @param graph graph to be drawn
+     * @param graphCycles cycles to be drawn
+     * @param pathList list of paths that constitute the predefined lines
+     */
+    private void addCyclesToMap(Graph graph, List<List<Integer>> graphCycles, List<CoordinateLine> pathList) {
         for (List<Integer> graphCycle : graphCycles) {
             for (int vertexIndex = 0; vertexIndex < graphCycle.size() - 1; vertexIndex++) {
-                pathListDacia.add(new CoordinateLine(
+                pathList.add(new CoordinateLine(
                         graph.getVertexList().get(graphCycle.get(vertexIndex)).getCenter(),
                         graph.getVertexList().get(graphCycle.get(vertexIndex + 1)).getCenter()
                 ).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
             }
-            pathListDacia.add(new CoordinateLine(
+            pathList.add(new CoordinateLine(
                     graph.getVertexList().get(graphCycle.get(0)).getCenter(),
                     graph.getVertexList().get(graphCycle.get(graphCycle.size() - 1)).getCenter()
             ).setColor(Color.DODGERBLUE).setFillColor(Color.DODGERBLUE).setVisible(true));
         }
 
-        for (var path : pathListDacia) {
+        for (var path : pathList) {
             mapView.addCoordinateLine(path);
         }
     }
 
+    /**
+     * Creates and initializes the predefined lists after the <code>mapView</code> is initialized
+     */
     private void afterMapIsInitialized() {
         mapView.setZoom(ZOOM_DEFAULT);
         mapView.setCenter(Info.COORD_EXPO);

@@ -3,16 +3,29 @@ package algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class for finding cycles in a given custom graph.
+ */
 public class CycleFinder {
     List<List<Integer>> graph = new ArrayList<>();
     List<List<Integer>> cycles = new ArrayList<>();
     Graph inputGraph;
 
+    /**
+     * Calls the <code>buildGraph()</code> method for initializing the graph.
+     * @param graph Graph given as input.
+     */
     public CycleFinder(Graph graph) {
         buildGraph(graph);
         this.inputGraph = graph;
     }
 
+    /**
+     * Checks if a cycle is equal to another in order to keep repeating cycles out of the final list.
+     * @param firstCycle first cycle to be compared
+     * @param secondCycle second cycle to be compared
+     * @return <code>true</code> if the cycles are equal, <code>false</code> otherwise
+     */
     static boolean equals(List<Integer> firstCycle, List<Integer> secondCycle) {
         boolean returnValue = (firstCycle.get(0).equals(secondCycle.get(0))) && (firstCycle.size() == secondCycle.size());
 
@@ -24,6 +37,11 @@ public class CycleFinder {
         return returnValue;
     }
 
+    /**
+     * Finds the smallest node in a graph (refering to its actual node value)
+     * @param path path to extract the smallest node from
+     * @return the smallest node in the path
+     */
     static int smallestNode(List<Integer> path) {
         int min = path.get(0);
 
@@ -33,6 +51,12 @@ public class CycleFinder {
         return min;
     }
 
+    /**
+     * Checks if a given node has been visited in the current finding sequence
+     * @param nodeToCheck node to be checked for being visited
+     * @param path path that would include the node
+     * @return <code>true</code> if the node has been visited, <code>false</code> otherwise
+     */
     static boolean visited(Integer nodeToCheck, List<Integer> path) {
         for (Integer node : path)
             if (node.equals(nodeToCheck))
@@ -40,6 +64,11 @@ public class CycleFinder {
         return false;
     }
 
+    /**
+     * Normalizes a given cycle (path) to ensure adjacency is respected
+     * @param path given path to normalize
+     * @return normalized path, returned as a <code>List of Integer</code>
+     */
     static List<Integer> normalizePath(List<Integer> path) {
         List<Integer> normalized = new ArrayList<>(path);
         int smallestNode = smallestNode(path);
@@ -54,6 +83,11 @@ public class CycleFinder {
         return normalized;
     }
 
+    /**
+     * Inverts a cycle such that the generated cycle will have respect to the route defined in the map
+     * @param path path to be inverted
+     * @return inverted path, in the form of a <code>List of Integer</code>
+     */
     static List<Integer> invertPath(List<Integer> path) {
         List<Integer> inverted = new ArrayList<>();
 
@@ -63,6 +97,11 @@ public class CycleFinder {
         return normalizePath(inverted);
     }
 
+    /**
+     * Checks if a cycle is new or has been previously generated
+     * @param path given path to check for repetition
+     * @return <code>true</code> if the cycle has been previously generated, <code>false</code> otherwise
+     */
     boolean isNew(List<Integer> path) {
         for (List<Integer> cycle : cycles)
             if (equals(cycle, path))
@@ -71,6 +110,10 @@ public class CycleFinder {
         return true;
     }
 
+    /**
+     * Recursive algorithm that finds a cycle from a given start node, and continues by using partial cycles
+     * @param path initial node (after recursion it becomes a partial cycle)
+     */
     void findNewCycles(List<Integer> path) {
         int node = path.get(0);
         int nodeToVisit;
@@ -102,6 +145,10 @@ public class CycleFinder {
                 }
     }
 
+    /**
+     * Initializes the graph by adding the proper adjacencies
+     * @param inputGraph input graph used to generate the graph attribute
+     */
     public void buildGraph(Graph inputGraph) {
         for (int index = 0; index < inputGraph.getEdgesList().size(); index++) {
             graph.add(new ArrayList<>());
@@ -110,6 +157,10 @@ public class CycleFinder {
         }
     }
 
+    /**
+     * Calls <code>findNewCycles()</code> for every two adjacent nodes in the graph
+     * @return <code>a List of Lists of Integers</code> that contains all the cycles found in the graph
+     */
     public List<List<Integer>> getAllCycles() {
         for (List<Integer> pair : graph)
             for (Integer node : pair) {

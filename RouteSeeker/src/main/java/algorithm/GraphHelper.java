@@ -2,7 +2,16 @@ package algorithm;
 
 import com.sothawo.mapjfx.MapCircle;
 
+/**
+ * Utilitary class that contains methods for working with the graph's properties
+ */
 public class GraphHelper {
+    /**
+     * Gets the distance between two points on the map
+     * @param firstPoint first point to check
+     * @param secondPoint second point to check
+     * @return distance in meters between the two points
+     */
     public static double getDistance(MapCircle firstPoint, MapCircle secondPoint) {
         double lon1 = firstPoint.getCenter().getLongitude();
         double lon2 = secondPoint.getCenter().getLongitude();
@@ -25,6 +34,4 @@ public class GraphHelper {
 
         return (c * r * 1000);
     }
-
-
 }

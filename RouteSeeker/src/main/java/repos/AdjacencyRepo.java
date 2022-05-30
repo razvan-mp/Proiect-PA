@@ -7,6 +7,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import java.util.List;
 
+/**
+ * Repository class for the <code>adjacency</code> table
+ */
 public class AdjacencyRepo {
     private final EntityManagerFactory entityManagerFactory = PersistenceManager.getInstance().getEntityManagerFactory();
 
